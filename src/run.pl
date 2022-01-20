@@ -49,7 +49,7 @@ sub main {
 
 
     print "Good file!\n";
-    system("gfortran main.f95");
+    system("gfortran -g -fcheck=all -Wall main.f95");
     system("./a.out $filename $data_len $uniq_values_count");
     system("rm a.out");
     close(FH);
