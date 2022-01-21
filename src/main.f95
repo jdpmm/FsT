@@ -33,10 +33,11 @@ subroutine init (filename, ks_var, ns_var)
     integer,         intent(in) :: ks_var, ns_var
     integer                     :: loopvar1 = 1, auxnumber = 1, loopvar2 = 1
     integer, dimension(ns_var)  :: alldata
-    integer, dimension(ks_var)  :: xi, fi, Fi_ac, mean
-    real,    dimension(ks_var)  :: hi
-    real                        :: meanvalue, medianvalue
+    integer, dimension(ks_var)  :: xi, fi, Fi_ac, mean, var
+    real,    dimension(ks_var)  :: hi, DM
+    real                        :: meanvalue, medianvalue, dmvalue, varvalue, dtvalue
     integer                     :: modevalue
+    real                        :: auxnumberR
 
     open (unit = 1, file=filename)
 
@@ -79,6 +80,16 @@ subroutine init (filename, ks_var, ns_var)
     ! -------------------------------------------------------------------------------------------------------------------------------
 
     ! -------------------------------------------------------------------------------------------------------------------------------
+    ! Getting values of mean and median:                                                                                            !
+    ! mean:                                                                                                                        !
+    !   Σ _xi_*_fi_                                                                                                               !
+    !         n                                                                                                                  !
+    ! median:                                                                                                                   !
+    !   if n is odd:                                                                                                             !
+    !      x((n + 1) / 2)                                                                                                         !
+    !   if n is even:                                                                                                              !
+    !      _x(n_/_2)_+_x((n_/_2)_+_1)_                                                                                              !
+    !                   2                                                                                                           !
     auxnumber = 0                                                                                                                   !
     do loopvar1 = 1, ks_var                                                                                                        !
         mean(loopvar1) = (xi(loopvar1) * fi(loopvar1))                                                                            !
@@ -88,15 +99,40 @@ subroutine init (filename, ks_var, ns_var)
     call get_median_value(alldata, ns_var, medianvalue)                                                                             !
     ! -------------------------------------------------------------------------------------------------------------------------------
 
+    ! -------------------------------------------------------------------------------------------------------------------------------
+    ! Setting values of varianza, desviacion media and desviacion tipica (Spanish names)                                            !
+    ! varianza:                                                                                                                     !
+    !      Σ _(xi²_fi)_  - x²                                                                                                        !
+    !           n                                                                                                                    !
+    ! desviacion media:                                                                                                             !
+    !      Σ _|xi_-_x|_*_fi_                                                                                                        !
+    !            n                                                                                                                   !
+    ! desviacion tipica                                                                                                              !
+    !      √ var                                                                                                                    !
+    auxnumberR = 0                                                                                                                  !
+    auxnumber = 0                                                                                                                    !
+    do loopvar1 = 1, ks_var                                                                                                          !
+        DM(loopvar1) = abs(real(xi(loopvar1)) - meanvalue) * fi(loopvar1)                                                           !
+        var(loopvar1) = (xi(loopvar1) ** 2) * fi(loopvar1)                                                                          !
+        auxnumberR = auxnumberR + DM(loopvar1)                                                                                     !
+        auxnumber = auxnumber + var(loopvar1)                                                                                     !
+    end do                                                                                                                       !
+    dmvalue = auxnumberR / real(ns_var)                                                                                         !
+    varvalue = (real(auxnumber) / real(ns_var)) - meanvalue**2                                                                 !
+    dtvalue = sqrt(varvalue)                                                                                                  !
+    ! ------------------------------------------------------------------------------------------------------------------------
+
     do loopvar1 = 1, ks_var
-        print *, xi(loopvar1), fi(loopvar1), Fi_ac(loopvar1), hi(loopvar1), mean(loopvar1)
+        print *, xi(loopvar1), fi(loopvar1), Fi_ac(loopvar1), hi(loopvar1), mean(loopvar1), DM(loopvar1), var(loopvar1)
     end do
 
     print *, "Another values"
     print *, "mean: ", meanvalue
     print *, "moda: ", modevalue
     print *, "median: ", medianvalue
-
+    print *, "DM: ", dmvalue
+    print *, "var; ", varvalue
+    print *, "DT: ", dtvalue
 end subroutine
 
 program main
