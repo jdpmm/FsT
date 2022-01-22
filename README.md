@@ -1,6 +1,6 @@
 # For Statistics Tran
 
-This project has been created to learn a little bit of Fortran and Perl programming languages, the project is about a descriptive statistics solver.
+This practice has been created to learn a little bit of Fortran and Perl programming languages, the project is about a descriptive statistics solver.
 To try it, you must have a file which represent a column, for example:
 
 ```
