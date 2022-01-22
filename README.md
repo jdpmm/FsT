@@ -36,4 +36,4 @@ Varianza
 DT
 ```
 
-Fortran is awesome!!, I gotta try another project/practice with Perl :D
+Fortran is awesome!!, I gotta try another practice with Perl :D
